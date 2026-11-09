@@ -1,0 +1,1261 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monopolicía</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rojo:#d91023;--rojo2:#a50c1b;--crema:#fbf3e2;--papel:#fffaf0;--tinta:#2b1d14;--tinta2:#6b5644;
+  --oro:#f2b705;--naranja:#f08a24;--verde:#1f8a4c;--azul:#1d4e9e;--morado:#7b2d8e;
+  --sombra:0 10px 30px rgba(43,29,20,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:Rubik,system-ui,sans-serif;color:var(--tinta);min-height:100vh;
+  background-color:#efe2c6;
+  background-image:
+    radial-gradient(circle at 20% 10%,rgba(217,16,35,.07),transparent 40%),
+    radial-gradient(circle at 90% 90%,rgba(29,78,158,.07),transparent 40%),
+    repeating-linear-gradient(45deg,rgba(43,29,20,.025) 0 2px,transparent 2px 14px);
+}
+button{font-family:inherit}
+.awayo{height:8px;background:repeating-linear-gradient(90deg,var(--rojo) 0 16px,var(--naranja) 16px 32px,var(--oro) 32px 48px,var(--verde) 48px 64px,var(--azul) 64px 80px,var(--morado) 80px 96px)}
+.zig{height:9px;background:
+  linear-gradient(135deg,var(--tinta) 25%,transparent 25%) -5px 0/10px 10px,
+  linear-gradient(225deg,var(--tinta) 25%,transparent 25%) -5px 0/10px 10px;background-color:var(--oro)}
+
+/* ---------- Topbar ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--tinta);color:#fff}
+.top-in{display:flex;align-items:center;gap:12px;padding:10px 18px;max-width:1360px;margin:0 auto;flex-wrap:wrap}
+.brand{font-family:'Lilita One';font-size:26px;letter-spacing:.02em;color:#fff;line-height:1}
+.brand span{color:var(--rojo);text-shadow:0 0 0 #fff}
+.chip{font-size:12px;font-weight:600;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:99px}
+.top .sp{flex:1}
+.tbtn{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);padding:7px 12px;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer}
+.tbtn:hover{background:rgba(255,255,255,.2)}
+
+/* ---------- Layout ---------- */
+.app{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;padding:16px 18px 30px;max-width:1360px;margin:0 auto;align-items:start}
+@media (max-width:1000px){.app{grid-template-columns:1fr;padding:12px}}
+.board-col{display:flex;justify-content:center}
+.board-wrap{
+  container-type:inline-size;
+  width:min(100%,calc(100vh - 110px),940px);min-width:300px;aspect-ratio:1;padding:1.3%;border-radius:16px;
+  background:repeating-linear-gradient(45deg,var(--rojo) 0 10px,#fff 10px 14px,var(--tinta) 14px 24px,#fff 24px 28px,var(--oro) 28px 38px,#fff 38px 42px,var(--verde) 42px 52px,#fff 52px 56px);
+  box-shadow:var(--sombra)
+}
+@media (max-width:1000px){.board-wrap{width:100%}}
+.board{width:100%;height:100%;display:grid;grid-template-columns:1.55fr repeat(9,1fr) 1.55fr;grid-template-rows:1.55fr repeat(9,1fr) 1.55fr;gap:1px;background:var(--tinta);border:2px solid var(--tinta);border-radius:6px;overflow:hidden}
+
+/* ---------- Casillas ---------- */
+.cell{position:relative;background:var(--rbg,var(--crema));display:flex;overflow:hidden;cursor:pointer;font-size:clamp(5px,1.12cqw,12px);line-height:1.08;text-align:center;transition:filter .15s}
+.cell:hover{filter:brightness(1.07) saturate(1.1)}
+.side-b{flex-direction:column}.side-t{flex-direction:column-reverse}.side-l{flex-direction:row-reverse}.side-r{flex-direction:row}
+.bar{flex:0 0 22%;display:flex;align-items:center;justify-content:center;gap:.25cqw;border:0 solid rgba(0,0,0,.25)}
+.side-b .bar{border-bottom-width:1px}.side-t .bar{border-top-width:1px}.side-l .bar{border-left-width:1px;flex-direction:column}.side-r .bar{border-right-width:1px;flex-direction:column}
+.bar .bld{display:flex;gap:.2cqw}
+.side-l .bar .bld,.side-r .bar .bld{flex-direction:column}
+.bld i{display:block;width:.95cqw;height:.95cqw;background:#2fbf5a;border:1px solid #0f5a26;border-radius:1px}
+.bld i.ho{width:1.6cqw;height:1.1cqw;background:var(--rojo);border-color:#5a0710}
+.body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;gap:.25cqw;min-width:0;min-height:0}
+.nm{font-weight:700;text-transform:uppercase;letter-spacing:.01em;overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
+.nm.long{font-size:.84em;letter-spacing:0}
+.pr{color:var(--tinta2);font-weight:500;font-size:.95em}
+.ic{font-size:2.1cqw;line-height:1}
+.t-go{background:linear-gradient(135deg,#fff 0 50%,#ffe3e6 50%)}
+.t-go .nm{color:var(--rojo);font-family:'Lilita One';font-size:2cqw;font-weight:400}
+.corner .ic{font-size:4.2cqw}
+.corner .nm{font-size:1.45cqw}
+.corner .pr{font-size:1.05cqw}
+.t-jail{background:repeating-linear-gradient(90deg,#f4e7cc 0 1.1cqw,#d9c6a2 1.1cqw 1.4cqw)}
+.t-parking{background:#ffe9b0}
+.t-gotojail{background:#dbe4f5}
+.ownb{position:absolute;top:.25cqw;right:.25cqw;width:2cqw;height:2cqw;border-radius:50%;display:none;place-items:center;font-size:1.15cqw;border:1px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.3);z-index:2}
+.cell.owned .ownb{display:grid}
+.cell.owned::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 .32cqw var(--oc);pointer-events:none}
+.stamp{position:absolute;left:4%;right:4%;top:50%;transform:translateY(-50%) rotate(-16deg);font-weight:800;font-size:.8em;letter-spacing:.04em;color:var(--rojo);border:.2cqw solid var(--rojo);background:rgba(255,250,240,.88);padding:.2cqw 0;display:none;z-index:2;pointer-events:none}
+.cell.emb .stamp{display:block}
+.cell.mort .stamp{display:block;color:#555;border-color:#555}
+.cell.mort > .body,.cell.mort > .bar{filter:grayscale(.85);opacity:.7}
+.cell.land{animation:land .6s}
+@keyframes land{0%{filter:brightness(1.5)}100%{filter:none}}
+.tokens{position:absolute;inset:0;display:flex;flex-wrap:wrap;align-items:flex-end;align-content:flex-end;justify-content:center;gap:1px;padding:.3cqw;pointer-events:none;z-index:3}
+.token{width:3cqw;height:3cqw;border-radius:50%;background:var(--pc);display:grid;place-items:center;font-size:1.8cqw;border:.25cqw solid #fff;box-shadow:0 .2cqw .5cqw rgba(0,0,0,.4);animation:pop .22s}
+.token.active{transform:scale(1.18);box-shadow:0 0 0 .3cqw var(--oro),0 .3cqw .7cqw rgba(0,0,0,.4)}
+.token.jailed{background-image:repeating-linear-gradient(90deg,transparent 0 .5cqw,rgba(0,0,0,.55) .5cqw .75cqw)}
+@keyframes pop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+
+/* ---------- Centro ---------- */
+.center{grid-row:2/11;grid-column:2/11;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 50% 42%,#fffaf0 0,#f7ead0 55%,#ecd9b2 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4cqw;padding:4cqw}
+.center::before{content:"";position:absolute;inset:2.2cqw;border:.25cqw dashed rgba(43,29,20,.18);border-radius:1.5cqw;pointer-events:none}
+.rlabel{position:absolute;font-family:'Lilita One';font-size:1.55cqw;letter-spacing:.35em;color:rgba(43,29,20,.38);white-space:nowrap}
+.rb{bottom:.5cqw;left:50%;transform:translateX(-50%)}
+.rt{top:.5cqw;left:50%;transform:translateX(-50%)}
+.rl{left:.5cqw;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl}
+.rr{right:.5cqw;top:50%;transform:translateY(-50%);writing-mode:vertical-rl}
+.deck{position:absolute;width:15cqw;height:10cqw;border-radius:1.2cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3cqw;color:#fff;font-family:'Lilita One';font-size:1.45cqw;letter-spacing:.06em;box-shadow:.5cqw .5cqw 0 rgba(43,29,20,.25),1cqw 1cqw 0 rgba(43,29,20,.1)}
+.deck span{font-size:3.4cqw}
+.deck.fortuna{top:6cqw;left:6cqw;transform:rotate(-12deg);background:linear-gradient(135deg,var(--naranja),#e0601b);border:.3cqw solid #fff}
+.deck.arca{bottom:6cqw;right:6cqw;transform:rotate(-12deg);background:linear-gradient(135deg,#2f6fc7,var(--azul));border:.3cqw solid #fff}
+.logo{font-family:'Lilita One';font-size:7.6cqw;color:var(--rojo);line-height:.9;transform:rotate(-4deg);text-shadow:.35cqw .45cqw 0 var(--tinta);-webkit-text-stroke:.15cqw var(--tinta);letter-spacing:.01em;position:relative;z-index:1}
+.tagline{font-size:clamp(9px,1.45cqw,14px);font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta2);margin-top:.6cqw;z-index:1}
+.status{font-size:clamp(11px,1.7cqw,16px);text-align:center;max-width:46cqw;min-height:2.6em;display:flex;align-items:center;justify-content:center;z-index:1}
+.round{font-size:clamp(9px,1.25cqw,12px);font-weight:700;color:var(--tinta2);letter-spacing:.12em;text-transform:uppercase;z-index:1}
+.dice{--ds:7.6cqw;display:flex;gap:3cqw;padding:1.8cqw 3cqw;border-radius:2cqw;background:rgba(43,29,20,.06);border:.25cqw dashed transparent;z-index:1;transition:background .2s}
+.dice.ready{cursor:pointer;background:rgba(242,183,5,.22);border-color:var(--oro);animation:breathe 1.4s ease-in-out infinite}
+.dice.ready:hover{background:rgba(242,183,5,.36)}
+@keyframes breathe{50%{transform:scale(1.05)}}
+.dice.rolling{animation:shake .35s linear 3}
+@keyframes shake{25%{transform:translate(-2px,1px) rotate(-2deg)}75%{transform:translate(2px,-1px) rotate(2deg)}}
+.die{width:var(--ds);height:var(--ds);perspective:40cqw}
+.tilt{width:100%;height:100%;transform-style:preserve-3d;transform:rotateX(-16deg) rotateY(20deg)}
+.cube{--h:calc(var(--ds) / 2);width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.15,.75,.25,1)}
+.face{position:absolute;inset:0;background:#fffaf0;border-radius:16%;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:13%;box-shadow:inset 0 0 0 .25cqw #e3cfa6,inset 0 -.5cqw .9cqw rgba(0,0,0,.08)}
+.face i{border-radius:50%;margin:14%}
+.face i.on{background:var(--tinta);box-shadow:inset 0 .15cqw .2cqw rgba(0,0,0,.5)}
+.f1 i.on{background:var(--rojo);margin:2%}
+.f1{transform:translateZ(var(--h))}
+.f2{transform:rotateY(90deg) translateZ(var(--h))}
+.f3{transform:rotateX(90deg) translateZ(var(--h))}
+.f4{transform:rotateX(-90deg) translateZ(var(--h))}
+.f5{transform:rotateY(-90deg) translateZ(var(--h))}
+.f6{transform:rotateY(180deg) translateZ(var(--h))}
+.dsum{font-weight:800;font-size:clamp(10px,1.5cqw,15px);min-height:1.3em;color:var(--tinta);z-index:1}
+.cbtns{display:flex;gap:1cqw;z-index:1}
+.cbtns button{font-size:clamp(11px,1.6cqw,16px)}
+
+/* ---------- Botones ---------- */
+.btn{border:0;border-radius:12px;padding:10px 16px;font-weight:700;font-size:14px;cursor:pointer;background:#ece0c8;color:var(--tinta);box-shadow:0 3px 0 rgba(43,29,20,.25);transition:transform .08s,filter .15s}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(43,29,20,.25)}
+.btn.primary{background:var(--rojo);color:#fff;box-shadow:0 3px 0 var(--rojo2)}
+.btn.gold{background:var(--oro);color:var(--tinta);box-shadow:0 3px 0 #b88a00}
+.btn.green{background:var(--verde);color:#fff;box-shadow:0 3px 0 #0f5a2f}
+.btn.ghost{background:transparent;box-shadow:none;border:2px solid #d9c6a2}
+.btn:disabled{opacity:.42;cursor:not-allowed;transform:none;filter:none}
+[hidden]{display:none!important}
+
+/* ---------- Panel lateral ---------- */
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel{background:var(--papel);border-radius:16px;box-shadow:var(--sombra);overflow:hidden}
+.panel h4{margin:0;padding:10px 14px;font-family:'Lilita One';font-weight:400;font-size:17px;letter-spacing:.04em;background:var(--tinta);color:#fff;display:flex;justify-content:space-between;align-items:center}
+.panel h4 small{font-family:Rubik;font-size:12px;font-weight:600;opacity:.7}
+.plist{display:flex;flex-direction:column;gap:8px;padding:10px}
+.pcard{border-radius:12px;padding:9px 11px;background:#fff;border:2px solid #efe3cb;transition:border-color .2s,box-shadow .2s}
+.pcard.turn{border-color:var(--pc);box-shadow:0 0 0 3px color-mix(in srgb,var(--pc) 25%,transparent)}
+.pcard.out{opacity:.45;filter:grayscale(.8)}
+.prow{display:flex;align-items:center;gap:8px}
+.ptok{width:30px;height:30px;border-radius:50%;background:var(--pc);display:grid;place-items:center;font-size:17px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3);flex:none}
+.pname{font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pname small{font-weight:500;color:var(--tinta2)}
+.cls{font-size:11px;font-weight:800;padding:3px 8px;border-radius:99px;color:#fff;background:var(--c);white-space:nowrap}
+.pmoney{display:flex;gap:12px;margin-top:6px;font-size:13px}
+.pmoney b{font-size:15px}
+.pmeta{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;font-size:11.5px;color:var(--tinta2)}
+.pmeta span{background:#f6eedd;padding:2px 7px;border-radius:99px}
+.pprops{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px}
+.pp{width:16px;height:16px;border-radius:3px;background:var(--g);cursor:pointer;border:1px solid rgba(0,0,0,.2);position:relative;font-size:9px;display:grid;place-items:center;color:#fff;font-weight:800}
+.pp.emb{background:repeating-linear-gradient(45deg,var(--g) 0 3px,#fff 3px 5px)}
+.pp.mort{opacity:.35}
+.log{list-style:none;margin:0;padding:8px 12px;max-height:290px;overflow:auto;font-size:12.5px;display:flex;flex-direction:column;gap:5px}
+.log li{padding:5px 8px;border-radius:8px;background:#f8f1e2;border-left:3px solid #d9c6a2;line-height:1.35}
+.log li.good{border-left-color:var(--verde);background:#eaf6ee}
+.log li.bad{border-left-color:var(--rojo);background:#fdecee}
+.log li.buy{border-left-color:var(--azul);background:#eaf0fb}
+.log li.card{border-left-color:var(--naranja);background:#fff1e3}
+.legend{padding:10px 14px;font-size:12px;color:var(--tinta2);display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.legend div{display:flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.15)}
+
+/* ---------- Modales ---------- */
+.overlay{position:fixed;inset:0;background:rgba(30,18,10,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:70;backdrop-filter:blur(2px)}
+.overlay.show{display:flex}
+#info{z-index:60}
+.modal{background:var(--papel);border-radius:20px;max-width:460px;width:100%;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.4);animation:rise .22s ease-out;max-height:92vh;overflow:auto;position:relative}
+.modal.wide{max-width:640px}
+@keyframes rise{from{transform:translateY(14px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.mbtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.mclose{position:absolute;top:10px;right:12px;background:none;border:0;font-size:22px;cursor:pointer;color:var(--tinta2)}
+.notice{text-align:center}
+.notice .nicon{font-size:52px;line-height:1;margin-bottom:6px}
+.notice h3{font-family:'Lilita One';font-weight:400;font-size:24px;margin:4px 0 8px;letter-spacing:.02em}
+.notice p{margin:0;line-height:1.5;color:#4b3a2c}
+.notice.bad h3{color:var(--rojo)}
+.notice.good h3{color:var(--verde)}
+.bottag{margin-top:14px;text-align:center;font-size:13px;font-weight:600;color:var(--tinta2);background:#f3e9d4;padding:7px;border-radius:10px}
+.center-txt{text-align:center;margin:14px 0 0}
+
+/* carta */
+.card{border-radius:16px;overflow:hidden;border:3px solid var(--dc);background:#fff}
+.card.fortuna{--dc:var(--naranja)}.card.arca{--dc:var(--azul)}
+.chead{background:var(--dc);color:#fff;font-family:'Lilita One';letter-spacing:.12em;padding:8px;text-align:center;font-size:15px}
+.cicon{font-size:50px;text-align:center;margin-top:10px}
+.card h3{text-align:center;font-family:'Lilita One';font-weight:400;font-size:23px;margin:2px 12px 10px}
+.cwho{text-align:center;font-size:13px;color:var(--tinta2);margin:-4px 12px 10px}
+.crows{display:flex;flex-direction:column;gap:6px;padding:0 12px 14px}
+.crow{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:#f7f1e4;font-size:13.5px;line-height:1.35;opacity:.5}
+.crow.active{opacity:1;background:#fff6d6;box-shadow:0 0 0 2px var(--oro);font-weight:600}
+.cbadge{flex:none;font-size:11px;font-weight:800;color:#fff;background:var(--c);padding:3px 7px;border-radius:99px;white-space:nowrap}
+
+/* título de propiedad */
+.deed{border:2px solid var(--tinta);border-radius:12px;overflow:hidden;background:#fff}
+.dhead{padding:10px 12px 12px;text-align:center;color:#fff;border-bottom:2px solid var(--tinta)}
+.dhead small{display:block;font-size:10.5px;letter-spacing:.12em;font-weight:700;opacity:.92}
+.dhead b{font-family:'Lilita One';font-weight:400;font-size:26px;letter-spacing:.02em;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.deed table{width:100%;border-collapse:collapse;font-size:13.5px}
+.deed td{padding:5px 14px}
+.deed td:last-child{text-align:right;font-weight:700}
+.deed tr.cur td{background:#fff3c7}
+.deed td.note{font-size:12px;color:var(--tinta2);text-align:center;font-weight:500}
+.dfoot{border-top:1px dashed #cdb894;padding:8px 14px;font-size:12.5px;display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
+.dfoot b{float:right}
+.dstate{margin-top:12px;text-align:center;font-size:13.5px}
+.why{font-size:12px;color:var(--rojo);text-align:center;margin-top:8px}
+
+/* setup */
+#setup{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto;
+  background:var(--tinta);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 2px,transparent 2px 16px)}
+.setup-card{background:var(--papel);border-radius:22px;max-width:620px;width:100%;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.setup-hero{padding:26px 24px 18px;text-align:center;background:radial-gradient(circle at 50% 0,#fff,#f4e4c3)}
+.setup-hero .logo{font-size:min(15vw,78px);display:inline-block}
+.setup-hero p{margin:14px auto 0;max-width:470px;color:#4b3a2c;line-height:1.5;font-size:14.5px}
+.slots{padding:16px 22px;display:flex;flex-direction:column;gap:9px}
+.slot{display:grid;grid-template-columns:auto 64px 1fr 120px;gap:8px;align-items:center}
+.slot .dot{width:14px;height:14px;border-radius:50%;background:var(--pc)}
+.slot select,.slot input{font-family:inherit;font-size:15px;padding:9px 10px;border-radius:10px;border:2px solid #e0cfae;background:#fff;color:var(--tinta);width:100%;min-width:0}
+.slot select.tok{font-size:20px;padding:5px}
+.slot.off input,.slot.off .tok{opacity:.4}
+.setup-foot{padding:4px 22px 22px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.setup-foot .btn{font-size:17px;padding:13px 30px}
+.hint{font-size:12.5px;color:var(--tinta2);text-align:center}
+
+/* reglas */
+.rules h2{font-family:'Lilita One';font-weight:400;margin:0 0 6px;font-size:28px;color:var(--rojo)}
+.rules h5{margin:16px 0 4px;font-size:15px}
+.rules p,.rules li{font-size:13.8px;line-height:1.5;color:#3d2e22}
+.rules ul{margin:4px 0;padding-left:20px}
+.rules .new{display:inline-block;font-size:10px;font-weight:800;background:var(--rojo);color:#fff;padding:2px 6px;border-radius:6px;vertical-align:2px;margin-left:4px}
+
+/* ranking */
+.rank{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.rank div{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#fff;border-radius:10px;border:1px solid #eadcc0}
+.rank b{flex:1}
+
+/* toasts */
+#toasts{position:fixed;top:66px;left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:min(92vw,420px)}
+.toast{background:var(--tinta);color:#fff;padding:9px 14px;border-radius:12px;font-size:13.5px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:rise .2s;text-align:center}
+.toast.good{background:var(--verde)}.toast.bad{background:var(--rojo)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">MONOPOLI<span>CÍA</span></div>
+    <div class="chip">🇵🇪 Edición Perú</div>
+    <div class="sp"></div>
+    <button class="tbtn" id="btnRules">📜 Reglas</button>
+    <button class="tbtn" id="btnSpeed">⚡ Bots: normal</button>
+    <button class="tbtn" id="btnFinish">🏁 Terminar partida</button>
+    <button class="tbtn" id="btnNew">🔄 Nueva partida</button>
+  </div>
+  <div class="awayo"></div>
+</header>
+
+<main class="app">
+  <section class="board-col">
+    <div class="board-wrap">
+      <div class="board" id="board">
+        <div class="center">
+          <div class="rlabel rb">🏖️ COSTA</div>
+          <div class="rlabel rl">🏔️ SIERRA</div>
+          <div class="rlabel rt">🌴 SELVA</div>
+          <div class="rlabel rr">🏝️ ISLAS DEL PACÍFICO</div>
+          <div class="deck fortuna"><span>🍀</span>FORTUNA</div>
+          <div class="deck arca"><span>🏺</span>ARCA COMUNAL</div>
+          <div class="logo">MONOPOLICÍA</div>
+          <div class="tagline">Trampa de la pobreza</div>
+          <div class="round" id="round"></div>
+          <div class="status" id="status">Configura la partida para empezar</div>
+          <div class="dice" id="dice" title="Haz clic para lanzar">
+            <div class="die" id="die1"><div class="tilt"><div class="cube"></div></div></div>
+            <div class="die" id="die2"><div class="tilt"><div class="cube"></div></div></div>
+          </div>
+          <div class="dsum" id="dsum"></div>
+          <div class="cbtns">
+            <button class="btn primary" id="btnRoll" hidden>🎲 Lanzar dados</button>
+            <button class="btn gold" id="btnEnd" hidden>Terminar turno ➜</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="panel">
+      <h4>Jugadores <small id="classHint">Pobre &lt; S/1,000 · Rico ≥ S/1,500</small></h4>
+      <div class="plist" id="plist"></div>
+    </div>
+    <div class="panel">
+      <h4>Bitácora</h4>
+      <ul class="log" id="log"></ul>
+    </div>
+    <div class="panel">
+      <div class="legend">
+        <div><i style="background:#f5e3b8"></i>Costa</div>
+        <div><i style="background:#e3cfb2"></i>Sierra</div>
+        <div><i style="background:#cfe6c0"></i>Selva</div>
+        <div><i style="background:#c8e2f0"></i>Islas del Pacífico</div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="overlay" id="flow"><div class="modal" id="flowBox"></div></div>
+<div class="overlay" id="info"><div class="modal" id="infoBox"></div></div>
+<div id="toasts"></div>
+
+<div id="setup">
+  <div class="setup-card">
+    <div class="zig"></div>
+    <div class="setup-hero">
+      <div class="logo">MONOPOLICÍA</div>
+      <p>El Monopoly peruano donde la cuna sí importa. Tira los dados para ver si naces <b>pobre, promedio o rico</b>, compra la Costa, la Sierra, la Selva y las Islas… y si te agarra la policía, siempre puedes "colaborar".</p>
+    </div>
+    <div class="slots" id="slots"></div>
+    <div class="setup-foot">
+      <button class="btn primary" id="btnStart">¡A jugar! 🎲</button>
+      <div class="hint">Mínimo 2 jugadores. Puedes jugar varios humanos en la misma pantalla.</div>
+    </div>
+    <div class="awayo"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   MONOPOLICÍA — Edición Perú
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const fmt=n=>'S/ '+Math.round(n).toLocaleString('es-PE');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const CLASSES={
+  pobre:{name:'Pobre',icon:'🪙',color:'#b23a2e'},
+  promedio:{name:'Promedio',icon:'💼',color:'#c98a10'},
+  rico:{name:'Rico',icon:'💎',color:'#1f8a4c'}
+};
+const TH_PROMEDIO=1000, TH_RICO=1500;
+const TOKENS=['🦙','🐹','🚐','🥔','🌽','🐟','🎺','⛰️'];
+const PCOLORS=['#d91023','#1d6fd8','#1f8a4c','#8e44ad'];
+
+const GROUPS={
+  marron:{c:'#8d5524',house:50},celeste:{c:'#3fa9d6',house:50},
+  rosa:{c:'#d94f8a',house:100},naranja:{c:'#f08a24',house:100},
+  rojo:{c:'#d62828',house:150},amarillo:{c:'#e8b520',house:150},
+  verde:{c:'#2a9d55',house:200},azul:{c:'#1d4e9e',house:200}
+};
+const REGIONS={
+  costa:{name:'Costa',bg:'#f5e3b8',icon:'🏖️'},
+  sierra:{name:'Sierra',bg:'#e3cfb2',icon:'🏔️'},
+  selva:{name:'Selva',bg:'#cfe6c0',icon:'🌴'},
+  islas:{name:'Islas del Pacífico',bg:'#c8e2f0',icon:'🏝️'}
+};
+const P=(name,group,price,rent)=>({type:'prop',name,group,price,rent});
+const BOARD=[
+  {type:'go',name:'SALIDA',icon:'🏁',sub:'Cobra S/200'},
+  P('Tumbes','marron',60,[2,10,30,90,160,250]),
+  {type:'arca',name:'Arca Comunal',icon:'🏺'},
+  P('Piura','marron',60,[4,20,60,180,320,450]),
+  {type:'tax',name:'SUNAT',long:'SUNAT · Impuesto a la Renta',icon:'🧾',amount:150},
+  {type:'rail',name:'Metropolitano',icon:'🚌',price:200},
+  P('Chiclayo','celeste',100,[6,30,90,270,400,550]),
+  {type:'fortuna',name:'Fortuna',icon:'🍀'},
+  P('Trujillo','celeste',100,[6,30,90,270,400,550]),
+  P('Lima','celeste',120,[8,40,100,300,450,600]),
+  {type:'jail',name:'CARCELETA',icon:'🚔',sub:'Solo de visita'},
+  P('Huancayo','rosa',140,[10,50,150,450,625,750]),
+  {type:'util',name:'Agua Potable',icon:'🚰',price:150},
+  P('Ayacucho','rosa',140,[10,50,150,450,625,750]),
+  P('Huaraz','rosa',160,[12,60,180,500,700,900]),
+  {type:'rail',name:'Tren Macho',icon:'🚂',price:200},
+  P('Arequipa','naranja',180,[14,70,200,550,750,950]),
+  {type:'arca',name:'Arca Comunal',icon:'🏺'},
+  P('Puno','naranja',180,[14,70,200,550,750,950]),
+  P('Cusco','naranja',200,[16,80,220,600,800,1000]),
+  {type:'parking',name:'FERIADO LARGO',icon:'🏖️',sub:'Descansa'},
+  P('Pto. Maldonado','rojo',220,[18,90,250,700,875,1050]),
+  {type:'fortuna',name:'Fortuna',icon:'🍀'},
+  P('Tarapoto','rojo',220,[18,90,250,700,875,1050]),
+  P('Moyobamba','rojo',240,[20,100,300,750,925,1100]),
+  {type:'rail',name:'Peque-peque',icon:'🛶',price:200},
+  P('Pucallpa','amarillo',260,[22,110,330,800,975,1150]),
+  P('Tingo María','amarillo',260,[22,110,330,800,975,1150]),
+  {type:'util',name:'Electricidad',icon:'⚡',price:150},
+  P('Iquitos','amarillo',280,[24,120,360,850,1025,1200]),
+  {type:'gotojail',name:'¡AL PENAL!',icon:'👮',sub:'Ve a la Carceleta'},
+  P('Lobos de Tierra','verde',300,[26,130,390,900,1100,1275]),
+  P('Islas Palomino','verde',300,[26,130,390,900,1100,1275]),
+  {type:'arca',name:'Arca Comunal',icon:'🏺'},
+  P('Isla San Lorenzo','verde',320,[28,150,450,1000,1200,1400]),
+  {type:'rail',name:'Lancha del Callao',icon:'🚤',price:200},
+  {type:'fortuna',name:'Fortuna',icon:'🍀'},
+  P('Isla El Frontón','azul',350,[35,175,500,1100,1300,1500]),
+  {type:'tax',name:'Impuesto al Lujo',long:'Impuesto al Lujo',icon:'💍',amount:100},
+  P('Islas Ballestas','azul',400,[50,200,600,1400,1700,2000])
+];
+const RAILS=[5,15,25,35], UTILS=[12,28];
+const BUYABLE=t=>t==='prop'||t==='rail'||t==='util';
+function regionOf(i){if(i>=1&&i<=9)return'costa';if(i>=11&&i<=19)return'sierra';if(i>=21&&i<=29)return'selva';if(i>=31&&i<=39)return'islas';return null}
+
+/* ---------- Cartas (efecto según clase social) ---------- */
+const V=(text,...fx)=>({text,fx});
+const C=(icon,title,pobre,promedio,rico)=>({icon,title,v:{pobre,promedio,rico}});
+const C3=(icon,title,v)=>C(icon,title,v,v,v);
+const money=v=>({t:'money',v});
+
+const ARCA=[
+  C('🏚️','Huaico en tu barrio',
+    V('El huaico se llevó tu casita de esteras. Paga S/120.',money(-120)),
+    V('Se inundó tu primer piso. Paga S/60 en reparaciones.',money(-60)),
+    V('Tu seguro cubre todo y hasta te reembolsa de más. Cobra S/50.',money(50))),
+  C('🍗','Pollada pro-fondos',
+    V('Organizas una pollada y el barrio te apoya. Cobra S/20 de cada jugador.',{t:'collectEach',v:20}),
+    V('Te venden tarjetas de la pollada. Paga S/20 a cada jugador.',{t:'payEach',v:20}),
+    V('Compras 10 tarjetas por compromiso y ni vas. Paga S/50.',money(-50))),
+  C('🏥','Te enfermaste',
+    V('Sin seguro, compras todo en la farmacia. Paga S/80.',money(-80)),
+    V('Pagas el copago de tu seguro. Paga S/40.',money(-40)),
+    V('Tu seguro internacional te devuelve hasta el taxi. Cobra S/30.',money(30))),
+  C('💸','Préstamo "gota a gota"',
+    V('Los intereses del préstamo informal te ahogan. Paga S/100.',money(-100)),
+    V('Pagas la cuota de tu tarjeta de crédito. Paga S/50.',money(-50)),
+    V('Cobras los intereses de la plata que prestaste. Cobra S/150.',money(150))),
+  C('👵','La herencia de la tía',
+    V('Heredas las deudas de la tía. Paga S/50.',money(-50)),
+    V('Heredas los ahorros que tenía bajo el colchón. Cobra S/100.',money(100)),
+    V('Heredas un depa en Miraflores que alquilas. Cobra S/250.',money(250))),
+  C('🏁','¡Conseguiste chamba!',
+    V('Por fin te ponen en planilla. Avanza a la SALIDA y cobra S/200.',{t:'move',to:0}),
+    V('Te ascienden. Avanza a la SALIDA y cobra S/200.',{t:'move',to:0}),
+    V('Abres otra empresa. Avanza a la SALIDA y cobra S/200.',{t:'move',to:0})),
+  C('🔨','Mantenimiento de tus propiedades',
+    V('Materiales caros y maestro de obra informal. Paga S/40 por casa y S/115 por hotel.',{t:'repairs',h:40,ho:115}),
+    V('Paga S/25 por casa y S/100 por hotel.',{t:'repairs',h:25,ho:100}),
+    V('Tu administrador consigue descuentos. Paga S/15 por casa y S/50 por hotel.',{t:'repairs',h:15,ho:50})),
+  C('🏦','El banco revisa tu historial',
+    V('Sales en rojo en la central de riesgo. ¡El banco EMBARGA uno de tus terrenos sin construir!',{t:'embargo'}),
+    V('Comisión por "mantenimiento de cuenta". Paga S/40.',money(-40)),
+    V('Te aprueban una línea de crédito preferencial. Cobra S/100.',money(100))),
+  C('🎁','Bono del Estado',
+    V('¡Calificas al bono! Cobra S/150.',money(150)),
+    V('No calificas, pero perdiste el día en la cola. Paga S/20.',money(-20)),
+    V('Ni te enteraste de que existía. No pasa nada.',{t:'nothing'})),
+  C('👮','Padrino en la comisaría',
+    V('Tu primo es suboficial. Guarda esta tarjeta: sales de la cárcel gratis.',{t:'jailCard'}),
+    V('Un amigo de la promo es comisario. Guarda esta tarjeta: sales de la cárcel gratis.',{t:'jailCard'}),
+    V('Tu abogado tiene contactos. Guarda esta tarjeta: sales de la cárcel gratis.',{t:'jailCard'})),
+  C('🎓','Temporada de matrícula',
+    V('Útiles y uniforme del colegio nacional. Paga S/50.',money(-50)),
+    V('Pensión del colegio particular. Paga S/80.',money(-80)),
+    V('Cuota de ingreso del colegio internacional. Paga S/150.',money(-150))),
+  C('🎂','Es tu cumpleaños',
+    V('Te traen un tamalito. Cobra S/10 de cada jugador.',{t:'collectEach',v:10}),
+    V('Cobra S/20 de cada jugador.',{t:'collectEach',v:20}),
+    V('Todos quieren quedar bien contigo. Cobra S/40 de cada jugador.',{t:'collectEach',v:40}))
+];
+
+const FORTUNA=[
+  C('🚌','Viaje a Cusco',
+    V('20 horas de bus interprovincial. Avanza a Cusco.',{t:'move',to:19}),
+    V('Promo de aerolínea low cost. Avanza a Cusco.',{t:'move',to:19}),
+    V('Vuelo directo con millas. Avanza a Cusco y cobra S/50.',{t:'move',to:19},money(50))),
+  C('🚔','Operativo policial',
+    V('Te confunden con un sospechoso. ¡Ve a la cárcel!',{t:'jail'}),
+    V('Tu SOAT estaba vencido. Paga S/60.',money(-60)),
+    V('Tu abogado lo resuelve con una llamada. No pasa nada.',{t:'nothing'})),
+  C('📈','Bolsa de Valores de Lima',
+    V('No tienes con qué invertir. No pasa nada.',{t:'nothing'}),
+    V('Tu fondo mutuo rinde. Cobra S/60.',money(60)),
+    V('Tus acciones mineras se disparan. Cobra S/200.',money(200))),
+  C('🏝️','Tour a las Islas Ballestas',
+    V('Ganaste el sorteo de un tour. Avanza a Islas Ballestas.',{t:'move',to:39}),
+    V('Full day a Paracas. Avanza a Islas Ballestas.',{t:'move',to:39}),
+    V('Vas en tu yate. Avanza a Islas Ballestas.',{t:'move',to:39})),
+  C('🚐','Hora punta',
+    V('La combi no paró en tu paradero. Retrocede 3 casillas.',{t:'moveRel',v:-3}),
+    V('Toma el transporte más cercano. Si tiene dueño, paga el doble.',{t:'nearestRail'}),
+    V('Tu chofer conoce un atajo. Avanza 3 casillas.',{t:'moveRel',v:3})),
+  C('🌊','Fenómeno El Niño',
+    V('Perdiste la cosecha de tu chacra. Paga S/100.',money(-100)),
+    V('Se disparó el precio del limón. Paga S/40.',money(-40)),
+    V('Especulas con los precios. Cobra S/20 de cada jugador.',{t:'collectEach',v:20})),
+  C('🎰','La Tinka del domingo',
+    V('Gastaste en boletos y nada. Paga S/30.',money(-30)),
+    V('Le atinaste a 4 números. Cobra S/50.',money(50)),
+    V('Ganaste el pozo secundario. Cobra S/100.',money(100))),
+  C('🚦','Papeleta de tránsito',
+    V('No te alcanza ni para "arreglar". Paga la multa completa: S/80.',money(-80)),
+    V('Pagas la papeleta: S/50.',money(-50)),
+    V('Lo "arreglas" con el de tránsito. Paga S/15.',money(-15))),
+  C3('🏁','Rumbo a la SALIDA',V('Avanza a la SALIDA y cobra S/200.',{t:'move',to:0})),
+  C('✊','Paro de transportistas',
+    V('No llegas a trabajar y pierdes el jornal. Paga S/60.',money(-60)),
+    V('Pagas taxi por aplicativo para llegar. Paga S/30.',money(-30)),
+    V('Haces home office desde la playa. No pasa nada.',{t:'nothing'})),
+  C('🏦','Auditoría bancaria',
+    V('El banco desconfía de ti. ¡EMBARGA uno de tus terrenos sin construir!',{t:'embargo'}),
+    V('El banco te cobra comisiones escondidas. Paga S/50.',money(-50)),
+    V('Tu banca privada te invita el almuerzo y un bono. Cobra S/50.',money(50))),
+  C('🏙️','Te vas a la capital',
+    V('Migras a Lima buscando oportunidades. Avanza a Lima.',{t:'move',to:9}),
+    V('Viaje de trabajo. Avanza a Lima.',{t:'move',to:9}),
+    V('Reunión de directorio. Avanza a Lima.',{t:'move',to:9})),
+  C('🔑','Coima pre-pagada',
+    V('Le caíste bien al comisario del barrio. Guarda esta tarjeta: sales de la cárcel gratis.',{t:'jailCard'}),
+    V('Guarda esta tarjeta: sales de la cárcel gratis.',{t:'jailCard'}),
+    V('Tienes "vara" en el Poder Judicial. Guarda esta tarjeta: sales de la cárcel gratis.',{t:'jailCard'}))
+];
+
+/* ---------- Estado ---------- */
+const S={players:[],props:{},cur:0,round:1,over:false,phase:'setup',speed:1,lastDice:7,
+  decks:{fortuna:[],arca:[]},humanIdle:false,rollRes:null,endRes:null,endRequested:false,spectate:false};
+BOARD.forEach((sq,i)=>{if(BUYABLE(sq.type))S.props[i]={owner:null,houses:0,mortgaged:false,embargoed:false}});
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const wait=ms=>sleep(ms*S.speed);
+const alive=()=>S.players.filter(p=>!p.bankrupt);
+const myProps=p=>Object.keys(S.props).map(Number).filter(i=>S.props[i].owner===p.id);
+const groupPos=g=>BOARD.map((s,i)=>s.group===g?i:-1).filter(i=>i>=0);
+const ownsGroup=(pid,g)=>groupPos(g).every(i=>S.props[i].owner===pid);
+const ownsGroupClean=(pid,g)=>groupPos(g).every(i=>S.props[i].owner===pid&&!S.props[i].mortgaged&&!S.props[i].embargoed);
+const houseCost=i=>GROUPS[BOARD[i].group].house;
+const mortVal=i=>Math.round(BOARD[i].price/2);
+const unmortCost=i=>Math.round(BOARD[i].price/2*1.1);
+const recoverCost=i=>mortVal(i)*2;
+const tokenSpan=p=>`<span style="display:inline-grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:${p.color};border:2px solid #fff;vertical-align:middle">${p.token}</span>`;
+
+function capital(p){
+  let c=p.cash;
+  for(const i of myProps(p)){
+    const st=S.props[i];
+    if(st.embargoed)continue;
+    c+=st.mortgaged?mortVal(i):BOARD[i].price;
+    if(st.houses)c+=st.houses*houseCost(i);
+  }
+  return Math.round(c);
+}
+function clase(p){const c=capital(p);return c<TH_PROMEDIO?'pobre':c<TH_RICO?'promedio':'rico'}
+function buildings(p){let h=0,ho=0;for(const i of myProps(p)){const n=S.props[i].houses;if(n===5)ho++;else h+=n}return{h,ho}}
+
+/* ---------- UI básica ---------- */
+function log(msg,type=''){
+  const li=document.createElement('li');li.className=type;li.innerHTML=msg;
+  const ul=$('#log');ul.prepend(li);while(ul.children.length>90)ul.lastChild.remove();
+}
+function toast(msg,type=''){
+  const t=document.createElement('div');t.className='toast '+type;t.innerHTML=msg;$('#toasts').appendChild(t);
+  setTimeout(()=>t.remove(),2600);
+}
+function setStatus(h){$('#status').innerHTML=h}
+function showBtns(roll,end){$('#btnRoll').hidden=!roll;$('#btnEnd').hidden=!end;$('#dice').classList.toggle('ready',!!roll)}
+
+function showModal({html,buttons=[],auto=null,wide=false}){
+  return new Promise(res=>{
+    const ov=$('#flow'),box=$('#flowBox');
+    box.className='modal'+(wide?' wide':'');
+    box.innerHTML=html+'<div class="mbtns"></div>';
+    const bw=box.querySelector('.mbtns');let done=false;
+    const finish=v=>{if(done)return;done=true;ov.classList.remove('show');res(v)};
+    buttons.forEach(b=>{
+      const e=document.createElement('button');e.className='btn '+(b.cls||'');e.innerHTML=b.label;e.disabled=!!b.disabled;
+      e.onclick=()=>finish(b.value);bw.appendChild(e);
+    });
+    ov.classList.add('show');
+    const first=bw.querySelector('button:not(:disabled)');if(first)setTimeout(()=>first.focus(),30);
+    if(auto)setTimeout(()=>finish(auto.value),Math.max(250,auto.ms*S.speed));
+  });
+}
+const botTag=(p,extra='')=>`<div class="bottag">🤖 Juega ${esc(p.name)}${extra?' · '+extra:''}</div>`;
+async function notice(p,{icon,title,text,tone=''}){
+  const html=`<div class="notice ${tone}"><div class="nicon">${icon}</div><h3>${title}</h3><p>${text}</p></div>`;
+  if(p&&p.isBot)return showModal({html:html+botTag(p),buttons:[{label:'Continuar',value:1,cls:'ghost'}],auto:{ms:1700,value:1}});
+  return showModal({html,buttons:[{label:'Aceptar',value:1,cls:'primary'}]});
+}
+
+/* ---------- Tablero ---------- */
+function gridPos(i){
+  if(i===0)return[11,11];if(i<10)return[11,11-i];if(i===10)return[11,1];
+  if(i<20)return[11-(i-10),1];if(i===20)return[1,1];if(i<30)return[1,1+(i-20)];
+  if(i===30)return[1,11];return[1+(i-30),11];
+}
+function sideOf(i){if(i%10===0)return'corner';if(i<10)return'b';if(i<20)return'l';if(i<30)return't';return'r'}
+function buildBoard(){
+  const b=$('#board');
+  BOARD.forEach((sq,i)=>{
+    const [r,c]=gridPos(i),side=sideOf(i),reg=regionOf(i);
+    const el=document.createElement('div');
+    el.className=`cell side-${side==='corner'?'b corner':side} t-${sq.type}`;
+    el.dataset.pos=i;el.style.gridRow=r;el.style.gridColumn=c;
+    if(reg)el.style.setProperty('--rbg',REGIONS[reg].bg);
+    let h='';
+    if(side==='corner'){
+      h=`<div class="body"><div class="ic">${sq.icon}</div><div class="nm">${sq.name}</div><div class="pr">${sq.sub}</div></div>`;
+    }else if(sq.type==='prop'){
+      h=`<div class="bar" style="background:${GROUPS[sq.group].c}"><span class="bld"></span></div><div class="body"><div class="nm ${sq.name.length>9?'long':''}">${sq.name}</div><div class="pr">S/${sq.price}</div></div>`;
+    }else{
+      const sub=sq.price?`S/${sq.price}`:sq.amount?`Paga S/${sq.amount}`:'';
+      h=`<div class="body"><div class="ic">${sq.icon}</div><div class="nm ${sq.name.length>9?'long':''}">${sq.name}</div>${sub?`<div class="pr">${sub}</div>`:''}</div>`;
+    }
+    h+='<div class="stamp"></div><div class="ownb"></div><div class="tokens"></div>';
+    el.innerHTML=h;el.onclick=()=>openInfo(i);
+    b.appendChild(el);
+  });
+}
+function renderCells(){
+  document.querySelectorAll('.cell').forEach(el=>{
+    const i=+el.dataset.pos,st=S.props[i];if(!st)return;
+    const o=st.owner!=null?S.players[st.owner]:null;
+    el.classList.toggle('owned',!!o);el.classList.toggle('emb',st.embargoed);el.classList.toggle('mort',st.mortgaged&&!st.embargoed);
+    el.style.setProperty('--oc',o?o.color:'transparent');
+    const ob=el.querySelector('.ownb');ob.textContent=o?o.token:'';ob.style.background=o?o.color:'';
+    el.querySelector('.stamp').textContent=st.embargoed?'EMBARGADO':st.mortgaged?'HIPOTECADO':'';
+    const bld=el.querySelector('.bld');
+    if(bld)bld.innerHTML=st.houses===5?'<i class="ho"></i>':'<i></i>'.repeat(st.houses);
+  });
+}
+function renderTokens(){
+  document.querySelectorAll('.tokens').forEach(t=>t.innerHTML='');
+  S.players.forEach((p,i)=>{
+    if(p.bankrupt)return;
+    const cell=document.querySelector(`.cell[data-pos="${p.pos}"] .tokens`);
+    const t=document.createElement('div');
+    t.className='token'+(i===S.cur&&S.phase==='play'?' active':'')+(p.inJail?' jailed':'');
+    t.style.setProperty('--pc',p.color);t.textContent=p.token;t.title=p.name;cell.appendChild(t);
+  });
+}
+function renderPlayers(){
+  $('#plist').innerHTML=S.players.map((p,i)=>{
+    const k=p.startClass?clase(p):null,cl=k?CLASSES[k]:null;
+    const props=myProps(p).sort((a,b)=>a-b).map(j=>{
+      const sq=BOARD[j],st=S.props[j];
+      const g=sq.type==='prop'?GROUPS[sq.group].c:sq.type==='rail'?'#444':'#7a8a99';
+      const mark=st.houses===5?'H':st.houses?st.houses:'';
+      return `<div class="pp ${st.embargoed?'emb':''} ${st.mortgaged?'mort':''}" style="--g:${g}" title="${esc(sq.name)}" data-pos="${j}">${mark}</div>`;
+    }).join('');
+    const meta=[];
+    meta.push(`🔄 Vuelta ${p.laps}`);
+    if(p.inJail)meta.push('🚔 En la carceleta');
+    if(p.jailCards)meta.push(`🔑 ×${p.jailCards}`);
+    if(p.bonus)meta.push('🎉 Bono turismo');
+    const {h,ho}=buildings(p);if(h||ho)meta.push(`🏠 ${h} · 🏨 ${ho}`);
+    return `<div class="pcard ${i===S.cur&&S.phase!=='setup'?'turn':''} ${p.bankrupt?'out':''}" style="--pc:${p.color}">
+      <div class="prow"><div class="ptok">${p.token}</div>
+        <div class="pname">${esc(p.name)} <small>${p.isBot?'🤖 bot':'👤 humano'}</small></div>
+        ${p.bankrupt?'<span class="cls" style="--c:#555">Quebró</span>':cl?`<span class="cls" style="--c:${cl.color}">${cl.icon} ${cl.name}</span>`:'<span class="cls" style="--c:#999">¿?</span>'}
+      </div>
+      <div class="pmoney"><div>Efectivo <b>${fmt(p.cash)}</b></div><div>Capital <b>${fmt(capital(p))}</b></div></div>
+      <div class="pmeta">${meta.map(m=>`<span>${m}</span>`).join('')}</div>
+      ${props?`<div class="pprops">${props}</div>`:''}
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.pp').forEach(e=>e.onclick=()=>openInfo(+e.dataset.pos));
+}
+function render(){
+  renderCells();renderTokens();renderPlayers();
+  $('#round').textContent=S.phase==='play'?`Ronda ${S.round}`:S.phase==='init'?'Ronda inicial':'';
+}
+function flashCell(i){const c=document.querySelector(`.cell[data-pos="${i}"]`);if(!c)return;c.classList.remove('land');void c.offsetWidth;c.classList.add('land')}
+
+/* ---------- Dados ---------- */
+const PIPS={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]};
+function faceHTML(n){let h='';for(let k=1;k<=9;k++)h+=`<i class="${PIPS[n].includes(k)?'on':''}"></i>`;return`<div class="face f${n}">${h}</div>`}
+document.querySelectorAll('.cube').forEach(c=>c.innerHTML=[1,2,3,4,5,6].map(faceHTML).join(''));
+const FACE_ROT={1:[0,0],2:[0,-90],3:[-90,0],4:[90,0],5:[0,90],6:[0,180]};
+let spin=0;
+async function animateDice(a,b){
+  spin++;
+  const dur=S.speed<.5?650:1100;
+  [[a,'#die1'],[b,'#die2']].forEach(([v,id],k)=>{
+    const [x,y]=FACE_ROT[v],c=$(id+' .cube');
+    c.style.transitionDuration=dur+'ms';
+    c.style.transform=`rotateX(${x+360*(spin*2+k)}deg) rotateY(${y+360*(spin*2+1-k)}deg)`;
+  });
+  $('#dsum').textContent='';
+  $('#dice').classList.add('rolling');
+  await sleep(dur+60);
+  $('#dice').classList.remove('rolling');
+  $('#dsum').textContent=`${a} + ${b} = ${a+b}${a===b?'  ·  ¡DOBLES!':''}`;
+}
+function waitRoll(p,init){
+  return new Promise(res=>{
+    S.humanIdle=!init;showBtns(true,false);
+    setStatus(init?`Ronda inicial · ${tokenSpan(p)}&nbsp;<b>${esc(p.name)}</b>, lanza los dados para ver con cuánto naces`
+                  :`Turno de ${tokenSpan(p)}&nbsp;<b>${esc(p.name)}</b> · haz clic en los dados`);
+    S.rollRes=()=>{S.rollRes=null;S.humanIdle=false;showBtns(false,false);res()};
+  });
+}
+function waitEnd(p){
+  return new Promise(res=>{
+    S.humanIdle=true;showBtns(false,true);
+    setStatus(`${tokenSpan(p)}&nbsp;<b>${esc(p.name)}</b>: haz clic en tus propiedades para construir o gestionarlas, luego termina tu turno`);
+    S.endRes=()=>{S.endRes=null;S.humanIdle=false;showBtns(false,false);res()};
+  });
+}
+async function rollFor(p,init=false){
+  if(p.isBot){
+    setStatus(`${init?'Ronda inicial · ':'Turno de '}${tokenSpan(p)}&nbsp;<b>${esc(p.name)}</b> 🤖 lanza los dados…`);
+    await wait(550);
+  }else await waitRoll(p,init);
+  const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6);
+  await animateDice(a,b);
+  S.lastDice=a+b;
+  return[a,b];
+}
+$('#dice').onclick=()=>S.rollRes&&S.rollRes();
+$('#btnRoll').onclick=()=>S.rollRes&&S.rollRes();
+$('#btnEnd').onclick=()=>S.endRes&&S.endRes();
+document.addEventListener('keydown',e=>{
+  if($('#flow').classList.contains('show')||$('#info').classList.contains('show'))return;
+  if((e.key===' '||e.key==='Enter')&&S.rollRes){e.preventDefault();S.rollRes()}
+});
+
+/* ---------- Movimiento ---------- */
+async function stepMove(p,steps){
+  const dir=Math.sign(steps);let passed=false;
+  for(let k=0;k<Math.abs(steps);k++){
+    p.pos=(p.pos+dir+40)%40;
+    if(dir>0&&p.pos===0)passed=true;
+    renderTokens();
+    await sleep(S.speed<.5?55:125);
+  }
+  flashCell(p.pos);
+  if(passed)await passGo(p);
+}
+async function passGo(p){
+  p.laps++;p.cash+=200;
+  log(`${p.token} <b>${esc(p.name)}</b> pasó por la SALIDA: +S/200 (vuelta ${p.laps}).`,'good');
+  render();
+  if(p.laps%3===0){
+    const {h,ho}=buildings(p),due=h*50+ho*100;
+    if(due>0){
+      await notice(p,{icon:'🏦',title:`Cuota bancaria · vuelta ${p.laps}`,tone:'bad',
+        text:`Cada 3 vueltas el banco cobra <b>S/50 por casa</b> y <b>S/100 por hotel</b>. Tienes ${h} casa(s) y ${ho} hotel(es): pagas <b>${fmt(due)}</b>.`});
+      await pay(p,due,null,'la cuota bancaria de cada 3 vueltas');
+    }else log(`🏦 Vuelta ${p.laps} de ${esc(p.name)}: sin casas ni hoteles, no paga cuota bancaria.`);
+  }
+}
+
+/* ---------- Dinero ---------- */
+async function raiseFunds(p,need){
+  const did=[];
+  const mortgageable=()=>myProps(p).filter(i=>{const st=S.props[i];return st.houses===0&&!st.mortgaged&&!st.embargoed&&!(BOARD[i].type==='prop'&&groupPos(BOARD[i].group).some(j=>S.props[j].owner===p.id&&S.props[j].houses>0))}).sort((a,b)=>BOARD[a].price-BOARD[b].price);
+  for(const i of mortgageable()){if(p.cash>=need)break;S.props[i].mortgaged=true;p.cash+=mortVal(i);did.push(`hipotecó ${BOARD[i].name}`)}
+  while(p.cash<need){
+    const built=myProps(p).filter(i=>S.props[i].houses>0).sort((a,b)=>S.props[b].houses-S.props[a].houses||houseCost(b)-houseCost(a));
+    if(!built.length)break;
+    const i=built[0];S.props[i].houses--;p.cash+=houseCost(i)/2;did.push(`vendió una casa en ${BOARD[i].name}`);
+  }
+  if(p.cash<need)for(const i of myProps(p).filter(i=>{const st=S.props[i];return st.houses===0&&!st.mortgaged&&!st.embargoed})){if(p.cash>=need)break;S.props[i].mortgaged=true;p.cash+=mortVal(i);did.push(`hipotecó ${BOARD[i].name}`)}
+  if(did.length){
+    const uniq=[...new Set(did)];
+    log(`💼 Para pagar, ${esc(p.name)} ${uniq.join(', ')}.`,'bad');
+    if(!p.isBot)toast(`Para cubrir la deuda: ${uniq.slice(0,3).join(', ')}${uniq.length>3?'…':''}`,'bad');
+  }
+  render();
+}
+async function pay(p,amt,cred,reason){
+  amt=Math.round(amt);if(amt<=0||p.bankrupt)return true;
+  if(p.cash<amt)await raiseFunds(p,amt);
+  if(p.cash>=amt){
+    p.cash-=amt;if(cred)cred.cash+=amt;
+    log(`${p.token} <b>${esc(p.name)}</b> pagó ${fmt(amt)}${cred?` a ${cred.token} ${esc(cred.name)}`:''} por ${reason}.`,'bad');
+    render();return true;
+  }
+  if(cred)cred.cash+=p.cash;p.cash=0;
+  await bankrupt(p,cred);
+  return false;
+}
+async function bankrupt(p,cred){
+  p.bankrupt=true;p.inJail=false;
+  for(const i of myProps(p))Object.assign(S.props[i],{owner:null,houses:0,mortgaged:false,embargoed:false});
+  log(`💀 <b>${esc(p.name)}</b> quebró${cred?` frente a ${esc(cred.name)}`:' frente al banco'}. Sus propiedades vuelven al banco.`,'bad');
+  render();
+  await notice(p,{icon:'💀',title:`${esc(p.name)} está en quiebra`,text:'No le alcanzó ni hipotecando ni vendiendo casas. Sus propiedades vuelven al banco.',tone:'bad'});
+}
+
+/* ---------- Embargos (regla del banco) ---------- */
+function embargable(p){return myProps(p).filter(i=>{const st=S.props[i];return BOARD[i].type==='prop'&&st.houses===0&&!st.embargoed&&!st.mortgaged})}
+async function embargo(p,source){
+  const list=embargable(p);if(!list.length)return false;
+  const i=list[Math.floor(Math.random()*list.length)];
+  S.props[i].embargoed=true;render();flashCell(i);
+  log(`🏦 El banco <b>embargó ${BOARD[i].name}</b> de ${esc(p.name)}.`,'bad');
+  await notice(p,{icon:'🏦',title:'¡EMBARGO!',tone:'bad',
+    text:`${source} El banco embargó <b>${BOARD[i].name}</b>. Mientras siga embargado no cobras alquiler ni puedes construir. Para recuperarlo debes pagar <b>${fmt(recoverCost(i))}</b> (el doble de su valor de hipoteca).`});
+  return true;
+}
+async function bankAudit(p){
+  const prob={pobre:.10,promedio:.05,rico:.02}[clase(p)];
+  if(embargable(p).length&&Math.random()<prob)await embargo(p,'Auditoría sorpresa del banco.');
+}
+
+/* ---------- Regiones y bono turismo ---------- */
+async function checkBonus(p){
+  if(p.bonus||p.bankrupt)return;
+  const ok=['costa','sierra','selva'].every(r=>myProps(p).some(i=>regionOf(i)===r&&S.props[i].houses>0));
+  if(!ok)return;
+  p.bonus=true;p.cash+=200;render();
+  log(`🎉 <b>${esc(p.name)}</b> tiene casas en Costa, Sierra y Selva: +S/200 por promover el turismo.`,'good');
+  await notice(p,{icon:'🎉',title:'¡Bono Turismo!',tone:'good',text:'Tienes al menos una casa en la Costa, la Sierra y la Selva. El Estado te premia con <b>S/200</b> por promover el turismo.'});
+}
+
+/* ---------- Cárcel + coima ---------- */
+async function sendToJail(p){
+  const k=clase(p),cost={pobre:60,promedio:100,rico:150}[k];
+  const html=`<div class="notice bad"><div class="nicon">🚔</div><h3>¡Te llevan a la Carceleta!</h3>
+    <p>El suboficial te mira y dice "¿cómo podemos arreglar esto?". Como eres <b>${CLASSES[k].icon} ${CLASSES[k].name}</b>, la "colaboración" te sale <b>${fmt(cost)}</b>.<br><small>Ojo: 1 de cada 5 policías es honesto. Si te toca uno, pierdes la plata y vas preso igual.</small></p></div>`;
+  let ch;
+  if(p.isBot){
+    ch=p.cash>=cost+150?'coima':'carcel';
+    await showModal({html:html+botTag(p,ch==='coima'?'decide coimear 🤝':'acepta la pena'),buttons:[{label:'Continuar',value:1,cls:'ghost'}],auto:{ms:1800,value:1}});
+  }else{
+    ch=await showModal({html,buttons:[{label:`🤝 Coimear (${fmt(cost)})`,value:'coima',cls:'primary',disabled:p.cash<cost},{label:'Ir a la cárcel',value:'carcel'}]});
+  }
+  if(ch==='coima'){
+    p.cash-=cost;render();
+    if(Math.random()<.8){
+      log(`🤝 <b>${esc(p.name)}</b> coimeó al policía con ${fmt(cost)} y sigue libre.`,'card');
+      toast(`🤝 ${esc(p.name)} coimeó al policía y se libró`,'good');
+      return false;
+    }
+    log(`🙅 El policía era honesto: ${esc(p.name)} perdió ${fmt(cost)} y va preso.`,'bad');
+    await notice(p,{icon:'🙅‍♂️',title:'¡Policía honesto!',tone:'bad',text:`Te tocó el único policía honesto de la comisaría. Perdiste ${fmt(cost)} y vas a la Carceleta.`});
+  }
+  p.pos=10;p.inJail=true;p.jailTurns=0;render();flashCell(10);
+  log(`🚔 <b>${esc(p.name)}</b> va a la Carceleta.`,'bad');
+  return true;
+}
+
+/* ---------- Casillas ---------- */
+function rentFor(i,dice){
+  const sq=BOARD[i],st=S.props[i],o=st.owner;
+  if(st.mortgaged||st.embargoed)return 0;
+  const active=j=>S.props[j].owner===o&&!S.props[j].mortgaged&&!S.props[j].embargoed;
+  if(sq.type==='rail')return 25*Math.pow(2,RAILS.filter(active).length-1);
+  if(sq.type==='util')return dice*(UTILS.filter(active).length>=2?10:4);
+  if(st.houses>0)return sq.rent[st.houses];
+  return sq.rent[0]*(ownsGroup(o,sq.group)?2:1);
+}
+async function landOn(p){
+  if(p.bankrupt)return;
+  const i=p.pos,sq=BOARD[i];
+  if(BUYABLE(sq.type))await landProperty(p,i,1);
+  else if(sq.type==='tax'){
+    if(!p.isBot)await notice(p,{icon:sq.icon,title:sq.long,text:`Pagas <b>${fmt(sq.amount)}</b> al Estado.`,tone:'bad'});
+    await pay(p,sq.amount,null,sq.long);
+  }
+  else if(sq.type==='fortuna'||sq.type==='arca')await drawCard(p,sq.type);
+  else if(sq.type==='gotojail')await sendToJail(p);
+  else if(sq.type==='parking')log(`🏖️ ${esc(p.name)} disfruta del feriado largo.`);
+  render();
+}
+async function landProperty(p,i,mult){
+  const sq=BOARD[i],st=S.props[i];
+  if(st.owner==null){
+    if(p.cash<sq.price){
+      log(`${esc(p.name)} no tiene suficiente para comprar ${sq.name} (${fmt(sq.price)}).`);
+      if(!p.isBot)await notice(p,{icon:'😬',title:sq.name,text:`Cuesta ${fmt(sq.price)} y solo tienes ${fmt(p.cash)}. No te alcanza.`});
+      return;
+    }
+    let buy;
+    if(p.isBot){
+      const completes=sq.type==='prop'&&groupPos(sq.group).filter(j=>j!==i).every(j=>S.props[j].owner===p.id);
+      const left=p.cash-sq.price;
+      buy=left>=120||(completes&&left>=0)||(left>=40&&Math.random()<.5);
+      await wait(450);
+    }else{
+      buy=await showModal({html:deedHTML(i)+`<p class="center-txt">Tienes <b>${fmt(p.cash)}</b>. ¿Compras <b>${sq.name}</b> por <b>${fmt(sq.price)}</b>?</p>`,
+        buttons:[{label:`Comprar · ${fmt(sq.price)}`,value:true,cls:'primary'},{label:'No comprar',value:false,cls:'ghost'}]});
+    }
+    if(buy){
+      p.cash-=sq.price;st.owner=p.id;
+      log(`${p.token} <b>${esc(p.name)}</b> compró <b>${sq.name}</b> por ${fmt(sq.price)}.`,'buy');
+      if(p.isBot)toast(`${p.token} ${esc(p.name)} compró ${sq.name}`);
+      render();flashCell(i);
+    }else log(`${esc(p.name)} decidió no comprar ${sq.name}.`);
+    return;
+  }
+  if(st.owner===p.id){log(`${esc(p.name)} cae en su propia propiedad, ${sq.name}.`);return}
+  const o=S.players[st.owner];
+  if(st.embargoed){
+    log(`🏦 ${sq.name} está embargado por el banco: ${esc(p.name)} no paga alquiler.`,'good');
+    if(!p.isBot)toast(`${sq.name} está embargado: ¡no pagas alquiler!`,'good');
+    return;
+  }
+  if(st.mortgaged){log(`${sq.name} está hipotecado: no se cobra alquiler.`);return}
+  const rent=rentFor(i,S.lastDice)*mult;
+  if(!p.isBot)await notice(p,{icon:'💸',title:`Alquiler en ${sq.name}`,tone:'bad',
+    text:`Es de ${tokenSpan(o)} <b>${esc(o.name)}</b>. Pagas <b>${fmt(rent)}</b>${mult>1?' (doble por la carta)':''}.`});
+  await pay(p,rent,o,`alquiler en ${sq.name}`);
+}
+
+/* ---------- Cartas ---------- */
+function cardHTML(card,deck,k,p){
+  const rows=['pobre','promedio','rico'].map(c=>`<div class="crow ${c===k?'active':''}"><span class="cbadge" style="--c:${CLASSES[c].color}">${CLASSES[c].icon} ${CLASSES[c].name}</span><span>${card.v[c].text}</span></div>`).join('');
+  return `<div class="card ${deck}"><div class="chead">${deck==='fortuna'?'🍀 FORTUNA':'🏺 ARCA COMUNAL'}</div>
+    <div class="cicon">${card.icon}</div><h3>${card.title}</h3>
+    <div class="cwho">${tokenSpan(p)} ${esc(p.name)} tiene capital de <b>${fmt(capital(p))}</b> → le toca el efecto <b>${CLASSES[k].name}</b></div>
+    <div class="crows">${rows}</div></div>`;
+}
+async function drawCard(p,deck){
+  if(!S.decks[deck].length)S.decks[deck]=shuffle([...(deck==='fortuna'?FORTUNA:ARCA)]);
+  const card=S.decks[deck].pop(),k=clase(p);
+  const html=cardHTML(card,deck,k,p);
+  if(p.isBot)await showModal({html:html+botTag(p),buttons:[{label:'Continuar',value:1,cls:'ghost'}],auto:{ms:2300,value:1}});
+  else await showModal({html,buttons:[{label:'Aceptar',value:1,cls:'primary'}]});
+  log(`${deck==='fortuna'?'🍀':'🏺'} ${esc(p.name)} (${CLASSES[k].name}) sacó <b>${card.title}</b>: ${card.v[k].text}`,'card');
+  await applyFx(p,card.v[k].fx);
+}
+async function applyFx(p,fx){
+  for(const f of fx){
+    if(p.bankrupt)return;
+    switch(f.t){
+      case'money':
+        if(f.v>0){p.cash+=f.v;log(`${esc(p.name)} cobra ${fmt(f.v)}.`,'good');render()}
+        else await pay(p,-f.v,null,'una carta');
+        break;
+      case'move':await stepMove(p,(f.to-p.pos+40)%40);await landOn(p);break;
+      case'moveRel':await stepMove(p,f.v);await landOn(p);break;
+      case'nearestRail':{const t=RAILS.find(r=>r>p.pos)??RAILS[0];await stepMove(p,(t-p.pos+40)%40);await landProperty(p,t,2);break}
+      case'jail':await sendToJail(p);break;
+      case'repairs':{const {h,ho}=buildings(p),due=h*f.h+ho*f.ho;
+        if(due>0)await pay(p,due,null,'mantenimiento de propiedades');else log(`${esc(p.name)} no tiene construcciones: no paga mantenimiento.`);break}
+      case'collectEach':for(const o of alive().filter(o=>o!==p))await pay(o,f.v,p,'una carta');break;
+      case'payEach':for(const o of alive().filter(o=>o!==p)){if(p.bankrupt)break;await pay(p,f.v,o,'una carta')}break;
+      case'embargo':{const ok=await embargo(p,'Por la carta,');
+        if(!ok){await notice(p,{icon:'🏦',title:'Sin terrenos que embargar',text:'No tienes terrenos sin construir, así que el banco te cobra <b>S/50</b> de "gastos administrativos".'});await pay(p,50,null,'gastos del banco')}break}
+      case'jailCard':p.jailCards++;render();break;
+    }
+  }
+}
+
+/* ---------- Gestión de propiedades ---------- */
+function canBuild(p,i){
+  const sq=BOARD[i],st=S.props[i];
+  if(sq.type!=='prop')return{ok:false,why:'Aquí no se puede construir.'};
+  if(st.owner!==p.id)return{ok:false,why:''};
+  if(st.embargoed)return{ok:false,why:'Está embargado: primero recupéralo.'};
+  if(st.mortgaged)return{ok:false,why:'Está hipotecado: primero levanta la hipoteca.'};
+  if(st.houses>=5)return{ok:false,why:'Ya tiene hotel.'};
+  if(st.houses===4&&!ownsGroupClean(p.id,sq.group))return{ok:false,why:'Para el hotel necesitas todo el grupo de color (sin hipotecas ni embargos).'};
+  if(p.cash<houseCost(i))return{ok:false,why:'No te alcanza el efectivo.'};
+  return{ok:true,why:''};
+}
+function canManage(i){
+  const p=S.players[S.cur];
+  return S.phase==='play'&&S.humanIdle&&p&&!p.isBot&&!p.bankrupt&&S.props[i]&&S.props[i].owner===p.id;
+}
+function deedHTML(i){
+  const sq=BOARD[i],st=S.props[i],reg=regionOf(i);
+  const owner=st.owner!=null?S.players[st.owner]:null;
+  let head,body='',foot='';
+  const regTxt=`${REGIONS[reg].icon} ${REGIONS[reg].name.toUpperCase()}`;
+  if(sq.type==='prop'){
+    head=`<div class="dhead" style="background:${GROUPS[sq.group].c}"><small>${regTxt} · TÍTULO DE PROPIEDAD</small><b>${sq.name}</b></div>`;
+    const L=['Alquiler','Con 1 casa','Con 2 casas','Con 3 casas','Con 4 casas','Con hotel'];
+    body=sq.rent.map((r,k)=>`<tr class="${owner&&st.houses===k?'cur':''}"><td>${L[k]}</td><td>${fmt(r)}</td></tr>`).join('')+
+      `<tr><td colspan="2" class="note">Con todo el grupo de color y sin casas: alquiler ×2</td></tr>`;
+    foot=`<div>Precio <b>${fmt(sq.price)}</b></div><div>Casa <b>${fmt(houseCost(i))}</b></div><div>Hipoteca <b>${fmt(mortVal(i))}</b></div><div>Recuperar embargo <b>${fmt(recoverCost(i))}</b></div>`;
+  }else if(sq.type==='rail'){
+    head=`<div class="dhead" style="background:#3b3b3b"><small>${regTxt} · TRANSPORTE</small><b>${sq.icon} ${sq.name}</b></div>`;
+    body=[1,2,3,4].map(n=>`<tr><td>Con ${n} transporte${n>1?'s':''}</td><td>${fmt(25*Math.pow(2,n-1))}</td></tr>`).join('');
+    foot=`<div>Precio <b>${fmt(sq.price)}</b></div><div>Hipoteca <b>${fmt(mortVal(i))}</b></div>`;
+  }else{
+    head=`<div class="dhead" style="background:#5f7385"><small>${regTxt} · SERVICIO</small><b>${sq.icon} ${sq.name}</b></div>`;
+    body=`<tr><td>Con 1 servicio</td><td>4 × dados</td></tr><tr><td>Con 2 servicios</td><td>10 × dados</td></tr>`;
+    foot=`<div>Precio <b>${fmt(sq.price)}</b></div><div>Hipoteca <b>${fmt(mortVal(i))}</b></div>`;
+  }
+  let state;
+  if(!owner)state='Disponible en el banco';
+  else{
+    state=`Dueño: ${tokenSpan(owner)} <b>${esc(owner.name)}</b>`;
+    if(st.houses===5)state+=' · 🏨 Hotel';else if(st.houses)state+=` · 🏠 ${st.houses} casa(s)`;
+    if(st.embargoed)state+=' · <b style="color:var(--rojo)">EMBARGADO</b>';
+    if(st.mortgaged)state+=' · <b>HIPOTECADO</b>';
+  }
+  return `<div class="deed">${head}<table>${body}</table><div class="dfoot">${foot}</div></div><div class="dstate">${state}</div>`;
+}
+function squareInfo(i){
+  const sq=BOARD[i];
+  const d={
+    go:['🏁','SALIDA','Cada vez que pasas o caes aquí cobras <b>S/200</b>. Cada 3 vueltas el banco cobra S/50 por casa y S/100 por hotel.'],
+    jail:['🚔','Carceleta','Si solo caes aquí, estás de visita. Si estás preso: paga fianza de S/50, usa una tarjeta o intenta sacar dobles (3 intentos).'],
+    parking:['🏖️','Feriado Largo','Descansa. Aquí no pasa nada.'],
+    gotojail:['👮','¡Al Penal!','Vas directo a la Carceleta… a menos que coimees al policía.'],
+    fortuna:['🍀','Fortuna','Saca una carta. Su efecto depende de tu clase social (pobre, promedio o rico).'],
+    arca:['🏺','Arca Comunal','Saca una carta. Su efecto depende de tu clase social (pobre, promedio o rico).'],
+    tax:[sq.icon,sq.long||sq.name,`Pagas <b>${fmt(sq.amount||0)}</b> al Estado.`]
+  }[sq.type];
+  return `<div class="notice"><div class="nicon">${d[0]}</div><h3>${d[1]}</h3><p>${d[2]}</p></div>`;
+}
+function openInfo(i){
+  const box=$('#infoBox');box.className='modal';
+  const close=()=>$('#info').classList.remove('show');
+  if(!S.props[i]){box.innerHTML=`<button class="mclose">✕</button>${squareInfo(i)}`;box.querySelector('.mclose').onclick=close;$('#info').classList.add('show');return}
+  let h=`<button class="mclose">✕</button>`+deedHTML(i);
+  const acts=[];let why='';
+  if(canManage(i)){
+    const p=S.players[S.cur],st=S.props[i],sq=BOARD[i];
+    if(sq.type==='prop'&&!st.embargoed&&!st.mortgaged){
+      const cb=canBuild(p,i);
+      if(st.houses<5)acts.push({a:'build',label:`${st.houses===4?'🏨 Hotel':'🏠 Construir casa'} · ${fmt(houseCost(i))}`,cls:'green',dis:!cb.ok});
+      if(!cb.ok&&st.houses<5)why=cb.why;
+      if(st.houses>0)acts.push({a:'sell',label:`Vender ${st.houses===5?'hotel':'casa'} · +${fmt(houseCost(i)/2)}`,cls:'ghost'});
+    }
+    if(st.embargoed)acts.push({a:'recover',label:`🏦 Recuperar embargo · ${fmt(recoverCost(i))}`,cls:'gold',dis:p.cash<recoverCost(i)});
+    else if(st.mortgaged)acts.push({a:'unmort',label:`Levantar hipoteca · ${fmt(unmortCost(i))}`,cls:'gold',dis:p.cash<unmortCost(i)});
+    else if(st.houses===0)acts.push({a:'mort',label:`Hipotecar · +${fmt(mortVal(i))}`,cls:'ghost'});
+  }else if(S.props[i].owner!=null&&S.players[S.props[i].owner]&&!S.players[S.props[i].owner].isBot&&S.phase==='play'){
+    h+=`<p class="why" style="color:var(--tinta2)">Puedes gestionar tus propiedades durante tu turno.</p>`;
+  }
+  if(why)h+=`<p class="why">${why}</p>`;
+  h+='<div class="mbtns">'+acts.map(x=>`<button class="btn ${x.cls}" data-a="${x.a}" ${x.dis?'disabled':''}>${x.label}</button>`).join('')+'</div>';
+  box.innerHTML=h;
+  box.querySelector('.mclose').onclick=close;
+  box.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>doAction(i,b.dataset.a));
+  $('#info').classList.add('show');
+}
+$('#info').addEventListener('click',e=>{if(e.target.id==='info')$('#info').classList.remove('show')});
+async function doAction(i,a){
+  if(!canManage(i))return;
+  const p=S.players[S.cur],st=S.props[i],sq=BOARD[i];
+  if(a==='build'&&canBuild(p,i).ok){
+    p.cash-=houseCost(i);st.houses++;
+    log(`🏗️ ${esc(p.name)} construyó ${st.houses===5?'un hotel':'una casa'} en ${sq.name}.`,'buy');
+    render();openInfo(i);await checkBonus(p);
+  }else if(a==='sell'&&st.houses>0){
+    st.houses--;p.cash+=houseCost(i)/2;log(`${esc(p.name)} vendió una construcción en ${sq.name}.`);
+  }else if(a==='mort'&&st.houses===0&&!st.mortgaged&&!st.embargoed){
+    st.mortgaged=true;p.cash+=mortVal(i);log(`${esc(p.name)} hipotecó ${sq.name} (+${fmt(mortVal(i))}).`);
+  }else if(a==='unmort'&&st.mortgaged&&p.cash>=unmortCost(i)){
+    st.mortgaged=false;p.cash-=unmortCost(i);log(`${esc(p.name)} levantó la hipoteca de ${sq.name}.`);
+  }else if(a==='recover'&&st.embargoed&&p.cash>=recoverCost(i)){
+    st.embargoed=false;p.cash-=recoverCost(i);log(`🏦 ${esc(p.name)} recuperó ${sq.name} del embargo pagando ${fmt(recoverCost(i))}.`,'good');
+  }
+  render();
+  if($('#info').classList.contains('show'))openInfo(i);
+}
+
+/* ---------- Bots ---------- */
+async function botManage(p){
+  for(const i of myProps(p)){
+    const st=S.props[i];
+    if(st.embargoed&&p.cash>=recoverCost(i)+250){
+      p.cash-=recoverCost(i);st.embargoed=false;
+      log(`🏦 ${esc(p.name)} recuperó ${BOARD[i].name} del embargo (${fmt(recoverCost(i))}).`,'good');render();await wait(300);
+    }else if(st.mortgaged&&p.cash>=unmortCost(i)+300){
+      p.cash-=unmortCost(i);st.mortgaged=false;log(`${esc(p.name)} levantó la hipoteca de ${BOARD[i].name}.`);render();
+    }
+  }
+  let built=0;
+  while(built<3&&!p.bankrupt){
+    const cands=myProps(p).filter(i=>canBuild(p,i).ok&&p.cash-houseCost(i)>=250);
+    if(!cands.length)break;
+    const need=['costa','sierra','selva'].filter(r=>!myProps(p).some(i=>regionOf(i)===r&&S.props[i].houses>0));
+    const score=i=>(ownsGroup(p.id,BOARD[i].group)?5:0)+(!p.bonus&&need.includes(regionOf(i))?4:0)-S.props[i].houses+BOARD[i].price/400;
+    cands.sort((a,b)=>score(b)-score(a));
+    const i=cands[0];p.cash-=houseCost(i);S.props[i].houses++;built++;
+    log(`🏗️ ${esc(p.name)} construyó ${S.props[i].houses===5?'un hotel':'una casa'} en ${BOARD[i].name}.`,'buy');
+    render();flashCell(i);await wait(400);await checkBonus(p);
+  }
+}
+
+/* ---------- Turnos ---------- */
+async function takeTurn(p){
+  render();
+  setStatus(`Turno de ${tokenSpan(p)}&nbsp;<b>${esc(p.name)}</b>${p.isBot?' 🤖':''}`);
+  if(p.isBot)await wait(350);
+  await bankAudit(p);
+  let doubles=0;
+  while(!p.bankrupt&&!S.over){
+    if(p.inJail){
+      let ch;
+      if(p.isBot){ch=p.jailCards?'card':p.cash>=300?'pay':'roll';await wait(350)}
+      else ch=await showModal({html:`<div class="notice"><div class="nicon">🚔</div><h3>Estás en la Carceleta</h3><p>Intento ${p.jailTurns+1} de 3. Saca dobles para salir gratis, paga la fianza o usa una tarjeta.</p></div>`,
+        buttons:[{label:'🎲 Intentar dobles',value:'roll',cls:'primary'},{label:'💰 Fianza · S/ 50',value:'pay',disabled:p.cash<50},{label:`🔑 Usar tarjeta (${p.jailCards})`,value:'card',disabled:!p.jailCards}]});
+      if(ch==='card'){p.jailCards--;p.inJail=false;log(`🔑 ${esc(p.name)} usó su tarjeta y sale de la Carceleta.`,'good');render();continue}
+      if(ch==='pay'){await pay(p,50,null,'la fianza');if(p.bankrupt)break;p.inJail=false;render();continue}
+      const [a,b]=await rollFor(p);
+      if(a===b){p.inJail=false;log(`🎲 ¡Dobles! ${esc(p.name)} sale de la Carceleta.`,'good');await stepMove(p,a+b);await landOn(p);break}
+      p.jailTurns++;
+      if(p.jailTurns>=3){
+        log(`${esc(p.name)} no sacó dobles en 3 intentos: paga la fianza obligatoria.`);
+        await pay(p,50,null,'la fianza obligatoria');if(p.bankrupt)break;
+        p.inJail=false;await stepMove(p,a+b);await landOn(p);
+      }else log(`${esc(p.name)} no sacó dobles y sigue en la Carceleta.`);
+      break;
+    }
+    const [a,b]=await rollFor(p);
+    const dbl=a===b;
+    if(dbl){doubles++;if(doubles===3){log(`🎲 ¡Tres dobles seguidos! ${esc(p.name)} va a la Carceleta.`,'bad');await sendToJail(p);break}}
+    await stepMove(p,a+b);
+    await landOn(p);
+    if(dbl&&!p.inJail&&!p.bankrupt&&!S.over){log(`🎲 ${esc(p.name)} sacó dobles y vuelve a tirar.`);continue}
+    break;
+  }
+  if(p.bankrupt||S.over)return;
+  if(p.isBot)await botManage(p);
+  else await waitEnd(p);
+}
+function nextPlayer(){
+  const n=S.players.length;let k=S.cur;
+  for(let t=0;t<n;t++){k=(k+1)%n;if(k===0)S.round++;if(!S.players[k].bankrupt)break}
+  S.cur=k;
+}
+async function checkOver(){
+  const al=alive();
+  if(al.length<=1){S.over=true;await showFinal(al[0]?`🏆 ¡${esc(al[0].name)} gana Monopolicía!`:'Fin de la partida');return true}
+  if(!S.spectate&&S.players.some(p=>!p.isBot)&&!al.some(p=>!p.isBot)){
+    S.spectate=true;
+    const v=await showModal({html:`<div class="notice bad"><div class="nicon">😵</div><h3>Te quedaste sin nada</h3><p>Los bots siguen jugando. ¿Quieres ver cómo termina?</p></div>`,
+      buttons:[{label:'Ver el final (rápido)',value:'watch',cls:'primary'},{label:'Ver ranking ahora',value:'rank'},{label:'Nueva partida',value:'new',cls:'ghost'}]});
+    if(v==='new')location.reload();
+    if(v==='rank'){S.over=true;await showFinal('Fin de la partida');return true}
+    setSpeed(2);
+  }
+  if(S.endRequested){S.over=true;await showFinal('Partida terminada');return true}
+  return false;
+}
+async function showFinal(title){
+  showBtns(false,false);
+  const rank=[...S.players].sort((a,b)=>(a.bankrupt-b.bankrupt)||capital(b)-capital(a));
+  const medals=['🥇','🥈','🥉','4️⃣'];
+  setStatus(title);
+  const html=`<div class="notice good"><div class="nicon">🏆</div><h3>${title}</h3><p>Ranking por capital total</p></div>
+    <div class="rank">${rank.map((p,k)=>`<div>${medals[k]||''} ${tokenSpan(p)} <b>${esc(p.name)}</b> ${p.bankrupt?'<span class="cls" style="--c:#555">Quebró</span>':`<span class="cls" style="--c:${CLASSES[clase(p)].color}">${CLASSES[clase(p)].name}</span> ${fmt(capital(p))}`}</div>`).join('')}</div>`;
+  const v=await showModal({html,buttons:[{label:'Nueva partida',value:'new',cls:'primary'},{label:'Ver tablero',value:'x',cls:'ghost'}]});
+  if(v==='new')location.reload();
+}
+async function gameLoop(){
+  S.phase='play';S.cur=0;S.round=1;render();
+  log('🎲 ¡Empieza la partida!','good');
+  while(!S.over){
+    const p=S.players[S.cur];
+    if(!p.bankrupt)await takeTurn(p);
+    if(await checkOver())break;
+    nextPlayer();
+  }
+}
+async function initPhase(){
+  S.phase='init';
+  log('🎲 Ronda inicial: cada jugador tira los dados. 2–5 pobre (S/500), 6–9 promedio (S/1,000), 10–12 rico (S/1,500).');
+  for(let i=0;i<S.players.length;i++){
+    S.cur=i;render();
+    const p=S.players[i];
+    const [a,b]=await rollFor(p,true),s=a+b;
+    const k=s<=5?'pobre':s<=9?'promedio':'rico',m={pobre:500,promedio:1000,rico:1500}[k];
+    p.cash=m;p.startClass=k;render();
+    log(`${p.token} <b>${esc(p.name)}</b> sacó ${s}: nace <b>${CLASSES[k].name}</b> con ${fmt(m)}.`,k==='pobre'?'bad':k==='rico'?'good':'');
+    await notice(p,{icon:CLASSES[k].icon,title:`${esc(p.name)} sacó ${s}`,tone:k==='pobre'?'bad':k==='rico'?'good':'',
+      text:`${k==='pobre'?'Le tocó nacer en la trampa de la pobreza.':k==='rico'?'Nació en cuna de oro.':'Clase media peruana: ni fu ni fa.'}<br>Empieza como <b>${CLASSES[k].icon} ${CLASSES[k].name}</b> con <b>${fmt(m)}</b>.`});
+  }
+  gameLoop();
+}
+
+/* ---------- Setup ---------- */
+const SLOTS=[
+  {type:'human',name:'Tú',token:'🦙'},
+  {type:'bot',name:'Don Pepe',token:'🐹'},
+  {type:'bot',name:'Doña Rosa',token:'🚐'},
+  {type:'bot',name:'Chalo',token:'🥔'}
+];
+function renderSlots(){
+  $('#slots').innerHTML=SLOTS.map((s,k)=>`
+    <div class="slot ${s.type==='none'?'off':''}" style="--pc:${PCOLORS[k]}">
+      <div class="dot"></div>
+      <select class="tok" data-k="${k}">${TOKENS.map(t=>`<option ${t===s.token?'selected':''}>${t}</option>`).join('')}</select>
+      <input data-k="${k}" maxlength="16" value="${esc(s.name)}" placeholder="Nombre">
+      <select class="typ" data-k="${k}">
+        <option value="human" ${s.type==='human'?'selected':''}>👤 Humano</option>
+        <option value="bot" ${s.type==='bot'?'selected':''}>🤖 Bot</option>
+        <option value="none" ${s.type==='none'?'selected':''}>— Vacío</option>
+      </select>
+    </div>`).join('');
+  $('#slots').querySelectorAll('.tok').forEach(e=>e.onchange=()=>SLOTS[e.dataset.k].token=e.value);
+  $('#slots').querySelectorAll('input').forEach(e=>e.oninput=()=>SLOTS[e.dataset.k].name=e.value);
+  $('#slots').querySelectorAll('.typ').forEach(e=>e.onchange=()=>{SLOTS[e.dataset.k].type=e.value;renderSlots()});
+}
+renderSlots();
+$('#btnStart').onclick=()=>{
+  const act=SLOTS.map((s,k)=>({...s,k})).filter(s=>s.type!=='none');
+  if(act.length<2){toast('Necesitas al menos 2 jugadores','bad');return}
+  const used=new Set();
+  S.players=act.map((s,id)=>{
+    let tok=s.token;if(used.has(tok))tok=TOKENS.find(t=>!used.has(t));used.add(tok);
+    return{id,name:(s.name||'Jugador').trim()||'Jugador',token:tok,color:PCOLORS[s.k],isBot:s.type==='bot',
+      cash:0,pos:0,inJail:false,jailTurns:0,jailCards:0,laps:0,bankrupt:false,bonus:false,startClass:null};
+  });
+  $('#setup').remove();
+  buildBoard();render();
+  initPhase();
+};
+
+/* ---------- Barra superior ---------- */
+const SPEEDS=[{v:1,l:'normal'},{v:.4,l:'rápido'},{v:.15,l:'turbo'}];let spIdx=0;
+function setSpeed(k){spIdx=k;S.speed=SPEEDS[k].v;$('#btnSpeed').textContent=`⚡ Bots: ${SPEEDS[k].l}`}
+$('#btnSpeed').onclick=()=>setSpeed((spIdx+1)%SPEEDS.length);
+$('#btnNew').onclick=async()=>{
+  if(S.phase==='setup')return;
+  if(confirm('¿Empezar una nueva partida? Se perderá la actual.'))location.reload();
+};
+$('#btnFinish').onclick=()=>{
+  if(S.phase!=='play'||S.over)return;
+  S.endRequested=true;toast('La partida terminará al acabar este turno');
+  if(S.endRes&&!$('#flow').classList.contains('show'))S.endRes();
+};
+$('#btnRules').onclick=()=>{
+  const box=$('#infoBox');
+  box.innerHTML=`<button class="mclose">✕</button><div class="rules">
+  <h2>Reglas de Monopolicía</h2>
+  <p>Se juega como el Monopoly clásico: tiras dos dados, avanzas, compras propiedades y cobras alquiler. Gana el último que no quiebre (o el de mayor capital si terminan antes).</p>
+  <h5>💰 Trampa de la pobreza <span class="new">NUEVA</span></h5>
+  <ul><li>Al inicio cada jugador tira los 2 dados: <b>2–5 pobre (S/500)</b>, <b>6–9 promedio (S/1,000)</b>, <b>10–12 rico (S/1,500)</b>.</li>
+  <li>Durante toda la partida tu clase se recalcula según tu <b>capital total</b> (efectivo + valor de propiedades no embargadas + casas): <b>Pobre</b> menos de S/1,000 · <b>Promedio</b> S/1,000–1,499 · <b>Rico</b> S/1,500 o más.</li>
+  <li>Cada carta de <b>Fortuna</b> y <b>Arca Comunal</b> tiene tres efectos; se aplica el de tu clase en ese momento.</li></ul>
+  <h5>🏦 Cuota bancaria cada 3 vueltas <span class="new">NUEVA</span></h5>
+  <ul><li>Cada vez que completas tu vuelta 3, 6, 9… pagas al banco <b>S/50 por casa</b> y <b>S/100 por hotel</b>.</li></ul>
+  <h5>📜 Embargos <span class="new">NUEVA</span></h5>
+  <ul><li>El banco puede embargar en cualquier momento un terreno tuyo <b>sin casas ni hotel</b>: hay auditorías sorpresa al inicio de cada turno (Pobre 10%, Promedio 5%, Rico 2%) y algunas cartas.</li>
+  <li>Un terreno embargado no cobra alquiler y no se puede construir. Para recuperarlo pagas <b>el doble de su valor de hipoteca</b>.</li></ul>
+  <h5>🗺️ Regiones del Perú <span class="new">NUEVA</span></h5>
+  <ul><li>El tablero se divide en <b>Costa</b>, <b>Sierra</b> y <b>Selva</b>, y la cuarta zona son las <b>Islas del Pacífico</b>.</li>
+  <li>Si tienes al menos una casa en la Costa, la Sierra y la Selva recibes un <b>bono de S/200</b> por promover el turismo (una vez por partida).</li></ul>
+  <h5>🤝 Coima <span class="new">NUEVA</span></h5>
+  <ul><li>Cuando te mandan a la cárcel puedes coimear al policía para evitar la pena: Pobre S/60, Promedio S/100, Rico S/150.</li>
+  <li>El 20% de los policías es honesto: si te toca uno, pierdes la plata y vas preso igual.</li></ul>
+  <h5>📋 Reglas base</h5>
+  <ul><li>Pasar por la SALIDA: +S/200. Sacar dobles: vuelves a tirar; tres dobles seguidos: cárcel.</li>
+  <li>En la Carceleta: fianza de S/50, tarjeta de salida gratis o intentar dobles (3 intentos).</li>
+  <li>Puedes construir casas en cualquier terreno tuyo durante tu turno; el <b>hotel</b> exige tener todo el grupo de color.</li>
+  <li>Hipotecar te da el 50% del precio; levantar la hipoteca cuesta 55%. Vender una casa devuelve la mitad.</li>
+  <li>Si no puedes pagar, se hipotecan propiedades y se venden casas automáticamente. Si aun así no alcanza, quiebras.</li>
+  <li>En esta versión no hay subastas ni intercambios entre jugadores.</li></ul>
+  </div>`;
+  box.querySelector('.mclose').onclick=()=>$('#info').classList.remove('show');
+  box.className='modal wide';
+  $('#info').classList.add('show');
+};
+/* modo prueba: ?auto=1 → todos bots en turbo */
+if(new URLSearchParams(location.search).get('auto')){
+  SLOTS.forEach(s=>s.type='bot');setSpeed(2);$('#btnStart').click();
+}
+</script>
+</body>
+</html>
